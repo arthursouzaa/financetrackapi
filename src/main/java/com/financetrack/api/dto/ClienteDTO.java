@@ -1,8 +1,10 @@
 package com.financetrack.api.dto;
 
+import com.financetrack.model.entity.Cliente;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.modelmapper.ModelMapper;
 
 @Data
 @AllArgsConstructor
@@ -15,4 +17,10 @@ public class ClienteDTO {
     private String telefone;
     private String senha;
     private String senhaConfirmada;
+
+    public static ClienteDTO create(Cliente cliente) {
+        ModelMapper modelMapper = new ModelMapper();
+        ClienteDTO dto = modelMapper.map(cliente, ClienteDTO.class);
+        return dto;
+    }
 }

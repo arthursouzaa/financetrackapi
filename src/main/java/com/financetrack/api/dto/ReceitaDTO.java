@@ -1,8 +1,10 @@
 package com.financetrack.api.dto;
 
+import com.financetrack.model.entity.Receita;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.modelmapper.ModelMapper;
 
 import java.util.Date;
 
@@ -17,4 +19,11 @@ public class ReceitaDTO {
     private float valor;
     private Long idCliente;
     private Long idCategoriaReceita;
+
+    public static ReceitaDTO create(Receita receita) {
+        ModelMapper modelMapper = new ModelMapper();
+        ReceitaDTO dto = modelMapper.map(receita, ReceitaDTO.class);
+        dto.nomeCategoriaReceita = receita.getCategoriaReceita().getNome();
+        return dto;
+    }
 }

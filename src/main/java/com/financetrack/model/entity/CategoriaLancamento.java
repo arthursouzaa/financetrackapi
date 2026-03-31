@@ -1,4 +1,4 @@
-package com.financetrack.demo.model.entity;
+package com.financetrack.model.entity;
 
 import jakarta.persistence.*;
 
