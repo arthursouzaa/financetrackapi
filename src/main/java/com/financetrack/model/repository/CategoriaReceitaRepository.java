@@ -1,4 +1,7 @@
 package com.financetrack.model.repository;
 
-public interface CategoriaReceita {
+import com.financetrack.model.entity.CategoriaReceita;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface CategoriaReceitaRepository extends JpaRepository<CategoriaReceita, Long> {
 }
