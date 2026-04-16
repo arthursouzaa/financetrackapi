@@ -39,12 +39,14 @@ public class AporteService {
     }
 
     public void validar(Aporte aporte) {
-        if(aporte.getValor() < 0) {
+        if(aporte.getValor() <= 0) {
             throw new RegraNegocioException("Valor inválido!");
         }
 
         if (aporte.getMetaFinanceira() == null || aporte.getMetaFinanceira().getId() == null || aporte.getMetaFinanceira().getId() == 0) {
-            throw new RegraNegocioException("Meta Financeira inválida!");
+            throw new RegraNegocioException("Meta inválida!");
         }
+
+        // crítica de data: somente datas de hj pra trás
     }
 }

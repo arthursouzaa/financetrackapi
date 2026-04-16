@@ -1,5 +1,6 @@
 package com.financetrack.service;
 
+import com.financetrack.api.exception.RegraNegocioException;
 import com.financetrack.model.entity.Despesa;
 import com.financetrack.model.repository.DespesaRepository;
 import jakarta.transaction.Transactional;
@@ -35,5 +36,20 @@ public class DespesaService {
     public void excluir(Despesa despesa) {
         Objects.requireNonNull(despesa.getId());
         repository.delete(despesa);
+    }
+
+    public void validar(Despesa despesa) {
+        if (despesa.getNome() == null || despesa.getNome().trim().isEmpty()) {
+            throw new RegraNegocioException("Nome inválido.");
+        }
+        if (despesa.getData() == null) {
+            throw new RegraNegocioException("Data inválida.");
+        }
+        if (despesa.getValor() <= 0) {
+            throw new RegraNegocioException("Valor inválido!");
+        }
+        if (despesa.isParcelada() && despesa.getQuantidadeParcelas() <= 0) {
+            throw new RegraNegocioException("A quantidade de parcelas deve ser maior que zero.");
+        }
     }
 }

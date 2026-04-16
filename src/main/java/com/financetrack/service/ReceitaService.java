@@ -1,5 +1,6 @@
 package com.financetrack.service;
 
+import com.financetrack.api.exception.RegraNegocioException;
 import com.financetrack.model.entity.Receita;
 import com.financetrack.model.repository.ReceitaRepository;
 import jakarta.transaction.Transactional;
@@ -35,5 +36,17 @@ public class ReceitaService {
     public void excluir(Receita receita) {
         Objects.requireNonNull(receita.getId());
         repository.delete(receita);
+    }
+
+    public void validar(Receita receita) {
+        if (receita.getNome() == null || receita.getNome().trim().isEmpty()) {
+            throw new RegraNegocioException("Nome inválido.");
+        }
+        if (receita.getData() == null) {
+            throw new RegraNegocioException("Data inválida.");
+        }
+        if(receita.getValor() <= 0) {
+            throw new RegraNegocioException("Valor inválido!");
+        }
     }
 }

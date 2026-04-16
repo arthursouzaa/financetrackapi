@@ -1,5 +1,6 @@
 package com.financetrack.service;
 
+import com.financetrack.api.exception.RegraNegocioException;
 import com.financetrack.model.entity.CategoriaDespesa;
 import com.financetrack.model.repository.CategoriaDespesaRepository;
 import jakarta.transaction.Transactional;
@@ -37,7 +38,13 @@ public class CategoriaDespesaService {
         repository.delete(categoriaDespesa);
     }
 
-    public validar(CategoriaDespesa categoriaDespesa) {
-        if(categoriaDespesa.getValorLimite() )
+    public void validar(CategoriaDespesa categoriaDespesa) {
+        if (categoriaDespesa.getNome() == null || categoriaDespesa.getNome().trim().isEmpty()) {
+            throw new RegraNegocioException("Nome inválido.");
+        }
+
+        if(categoriaDespesa.isLimiteGasto() && categoriaDespesa.getValorLimite() <= 0) {
+            throw new RegraNegocioException("O valor limite deve ser maior que zero.");
+        }
     }
 }

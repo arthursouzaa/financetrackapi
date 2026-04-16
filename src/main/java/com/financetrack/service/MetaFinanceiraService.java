@@ -1,5 +1,6 @@
 package com.financetrack.service;
 
+import com.financetrack.api.exception.RegraNegocioException;
 import com.financetrack.model.entity.MetaFinanceira;
 import com.financetrack.model.repository.MetaFinanceiraRepository;
 import jakarta.transaction.Transactional;
@@ -35,5 +36,17 @@ public class MetaFinanceiraService {
     public void excluir(MetaFinanceira metaFinanceira) {
         Objects.requireNonNull(metaFinanceira.getId());
         repository.delete(metaFinanceira);
+    }
+
+    public void validar(MetaFinanceira metaFinanceira) {
+        if (metaFinanceira.getNome() == null || metaFinanceira.getNome().trim().isEmpty()) {
+            throw new RegraNegocioException("Nome inválido.");
+        }
+        if (metaFinanceira.getValor() <= 0) {
+            throw new RegraNegocioException("Valor inválido!");
+        }
+        if (metaFinanceira.getInvestimentoInicial() < 0) {
+            throw new RegraNegocioException("Investimento inicial inválido!");
+        }
     }
 }

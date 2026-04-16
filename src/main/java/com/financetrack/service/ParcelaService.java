@@ -1,5 +1,6 @@
 package com.financetrack.service;
 
+import com.financetrack.api.exception.RegraNegocioException;
 import com.financetrack.model.entity.Parcela;
 import com.financetrack.model.repository.ParcelaRepository;
 import jakarta.transaction.Transactional;
@@ -35,5 +36,11 @@ public class ParcelaService {
     public void excluir(Parcela parcela) {
         Objects.requireNonNull(parcela.getId());
         repository.delete(parcela);
+    }
+
+    public void validar(Parcela parcela) {
+        if (parcela.getValorParcela() <= 0) {
+            throw new RegraNegocioException("Valor inválido!");
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.financetrack.service;
 
+import com.financetrack.api.exception.RegraNegocioException;
 import com.financetrack.model.entity.FormaPagamento;
 import com.financetrack.model.repository.FormaPagamentoRepository;
 import jakarta.transaction.Transactional;
@@ -35,5 +36,11 @@ public class FormaPagamentoService {
     public void excluir(FormaPagamento formaPagamento) {
         Objects.requireNonNull(formaPagamento.getId());
         repository.delete(formaPagamento);
+    }
+
+    public void validar(FormaPagamento formaPagamento) {
+        if (formaPagamento.getNome() == null || formaPagamento.getNome().trim().isEmpty()) {
+            throw new RegraNegocioException("Nome inválido.");
+        }
     }
 }

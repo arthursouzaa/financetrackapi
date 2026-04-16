@@ -1,5 +1,6 @@
 package com.financetrack.service;
 
+import com.financetrack.api.exception.RegraNegocioException;
 import com.financetrack.model.entity.CategoriaReceita;
 import com.financetrack.model.repository.CategoriaReceitaRepository;
 import jakarta.transaction.Transactional;
@@ -35,5 +36,11 @@ public class CategoriaReceitaService {
     public void excluir(CategoriaReceita categoriaReceita) {
         Objects.requireNonNull(categoriaReceita.getId());
         repository.delete(categoriaReceita);
+    }
+
+    public void validar(CategoriaReceita categoriaReceita) {
+        if (categoriaReceita.getNome() == null || categoriaReceita.getNome().trim().isEmpty()) {
+            throw new RegraNegocioException("Nome inválido.");
+        }
     }
 }
