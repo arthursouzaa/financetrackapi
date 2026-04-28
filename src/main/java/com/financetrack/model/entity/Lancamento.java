@@ -13,7 +13,6 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 
-
 public abstract class Lancamento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -19,6 +19,7 @@ public class ReceitaDTO {
     private float valor;
     private Long idCliente;
     private Long idCategoriaReceita;
+    private String nomeCategoriaReceita;
 
     public static ReceitaDTO create(Receita receita) {
         ModelMapper modelMapper = new ModelMapper();
