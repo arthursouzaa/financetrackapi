@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/v1/categorias")
+@RequestMapping("/api/v1/formasPagamento")
 @RequiredArgsConstructor
 @CrossOrigin
 
