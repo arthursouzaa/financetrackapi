@@ -3,7 +3,9 @@ package com.financetrack.api.controller;
 import com.financetrack.api.dto.MetaFinanceiraDTO;
 
 import com.financetrack.api.exception.RegraNegocioException;
+import com.financetrack.model.entity.Cliente;
 import com.financetrack.model.entity.MetaFinanceira;
+import com.financetrack.service.ClienteService;
 import com.financetrack.service.MetaFinanceiraService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 
 public class MetaFinanceiraController {
     private final MetaFinanceiraService service;
+    private final ClienteService clienteService;
 
     @GetMapping()
     public ResponseEntity get() {
@@ -36,5 +39,30 @@ public class MetaFinanceiraController {
             return new ResponseEntity("Meta Financeira não encontrada", HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ok(metaFinanceira.map(MetaFinanceiraDTO::create));
+    }
+
+    @PostMapping()
+    public ResponseEntity post(@RequestBody MetaFinanceiraDTO dto) {
+        try {
+            MetaFinanceira metaFinanceira = converter(dto);
+            metaFinanceira = service.salvar(metaFinanceira);
+            return new ResponseEntity(metaFinanceira, HttpStatus.CREATED);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    public MetaFinanceira converter(MetaFinanceiraDTO dto) {
+        ModelMapper modelMapper = new ModelMapper();
+        MetaFinanceira metaFinanceira = modelMapper.map(dto, MetaFinanceira.class);
+        if (dto.getIdCliente() != null) {
+            Optional<Cliente> cliente = clienteService.getClienteById(dto.getIdCliente());
+            if (!cliente.isPresent()) {
+                metaFinanceira.setCliente(null);
+            } else {
+                metaFinanceira.setCliente(cliente.get());
+            }
+        }
+        return metaFinanceira;
     }
 }

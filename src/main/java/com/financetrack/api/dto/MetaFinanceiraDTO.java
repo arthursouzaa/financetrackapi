@@ -24,6 +24,7 @@ public class MetaFinanceiraDTO {
     public static MetaFinanceiraDTO create(MetaFinanceira metaFinanceira) {
         ModelMapper modelMapper = new ModelMapper();
         MetaFinanceiraDTO dto = modelMapper.map(metaFinanceira, MetaFinanceiraDTO.class);
+        dto.idCliente = metaFinanceira.getCliente().getId();
         return dto;
     }
 }

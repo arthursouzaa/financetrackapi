@@ -23,6 +23,7 @@ public class MetaFinanceira {
     private Date dataEnvio;
     private Date dataAlvo;
     private float investimentoInicial;
+    private boolean status;
 
     @ManyToOne
     private Cliente cliente;

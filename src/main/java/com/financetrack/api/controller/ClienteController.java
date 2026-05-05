@@ -4,6 +4,7 @@ import com.financetrack.api.dto.ClienteDTO;
 
 import com.financetrack.api.exception.RegraNegocioException;
 import com.financetrack.model.entity.Cliente;
+import com.financetrack.model.entity.MetaFinanceira;
 import com.financetrack.service.ClienteService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -25,16 +26,33 @@ public class ClienteController {
 
     @GetMapping()
     public ResponseEntity get() {
-        List<Cliente> categorias = service.getClientes();
-        return ResponseEntity.ok(categorias.stream().map(ClienteDTO::create).collect(Collectors.toList()));
+        List<Cliente> clientes = service.getClientes();
+        return ResponseEntity.ok(clientes.stream().map(ClienteDTO::create).collect(Collectors.toList()));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity get(@PathVariable("id") Long id) {
-        Optional<Cliente> categoria = service.getClienteById(id);
-        if (!categoria.isPresent()) {
+        Optional<Cliente> cliente = service.getClienteById(id);
+        if (!cliente.isPresent()) {
             return new ResponseEntity("Cliente não encontrado", HttpStatus.NOT_FOUND);
         }
-        return ResponseEntity.ok(categoria.map(ClienteDTO::create));
+        return ResponseEntity.ok(cliente.map(ClienteDTO::create));
+    }
+
+    @PostMapping()
+    public ResponseEntity post(@RequestBody ClienteDTO dto) {
+        try {
+            Cliente cliente = converter(dto);
+            cliente = service.salvar(cliente);
+            return new ResponseEntity(cliente, HttpStatus.CREATED);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    public Cliente converter(ClienteDTO dto) {
+        ModelMapper modelMapper = new ModelMapper();
+        Cliente cliente = modelMapper.map(dto, Cliente.class);
+        return cliente;
     }
 }

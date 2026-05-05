@@ -4,7 +4,9 @@ import com.financetrack.api.dto.AporteDTO;
 
 import com.financetrack.api.exception.RegraNegocioException;
 import com.financetrack.model.entity.Aporte;
+import com.financetrack.model.entity.MetaFinanceira;
 import com.financetrack.service.AporteService;
+import com.financetrack.service.MetaFinanceiraService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 
 public class AporteController {
     private final AporteService service;
+    private final MetaFinanceiraService metaFinanceiraService;
 
     @GetMapping()
     public ResponseEntity get() {
@@ -36,5 +39,30 @@ public class AporteController {
             return new ResponseEntity("Aporte não encontrado", HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ok(aporte.map(AporteDTO::create));
+    }
+
+    @PostMapping()
+    public ResponseEntity post(@RequestBody AporteDTO dto) {
+        try {
+            Aporte aporte = converter(dto);
+            aporte = service.salvar(aporte);
+            return new ResponseEntity(aporte, HttpStatus.CREATED);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    public Aporte converter(AporteDTO dto) {
+        ModelMapper modelMapper = new ModelMapper();
+        Aporte aporte = modelMapper.map(dto, Aporte.class);
+        if (dto.getIdMetaFinanceira() != null) {
+            Optional<MetaFinanceira> metaFinanceira = metaFinanceiraService.getMetaFinanceiraById(dto.getIdMetaFinanceira());
+            if (!metaFinanceira.isPresent()) {
+                aporte.setMetaFinanceira(null);
+            } else {
+                aporte.setMetaFinanceira(metaFinanceira.get());
+            }
+        }
+        return aporte;
     }
 }
