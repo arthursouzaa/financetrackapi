@@ -2,9 +2,13 @@ package com.financetrack.api.controller;
 
 import com.financetrack.api.dto.ReceitaDTO;
 
+import com.financetrack.api.exception.RegraNegocioException;
+import com.financetrack.model.entity.Cliente;
 import com.financetrack.model.entity.Receita;
+import com.financetrack.service.ClienteService;
 import com.financetrack.service.ReceitaService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +24,7 @@ import java.util.stream.Collectors;
 
 public class ReceitaController {
     private final ReceitaService service;
+    private final ClienteService clienteService;
 
     @GetMapping()
     public ResponseEntity get() {
@@ -34,5 +39,31 @@ public class ReceitaController {
             return new ResponseEntity("Receita não encontrada", HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ok(receita.map(ReceitaDTO::create));
+    }
+
+    @PostMapping()
+    public ResponseEntity post(@RequestBody ReceitaDTO dto) {
+        try {
+            Receita receita = converter(dto);
+            receita = service.salvar(receita);
+            return new ResponseEntity(receita, HttpStatus.CREATED);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    public Receita converter(ReceitaDTO dto) {
+        ModelMapper modelMapper = new ModelMapper();
+        Receita receita = modelMapper.map(dto, Receita.class);
+        receita.setId(null);
+        if (dto.getIdCliente() != null) {
+            Optional<Cliente> cliente = clienteService.getClienteById(dto.getIdCliente());
+            if (!cliente.isPresent()) {
+                receita.setCliente(null);
+            } else {
+                receita.setCliente(cliente.get());
+            }
+        }
+        return receita;
     }
 }

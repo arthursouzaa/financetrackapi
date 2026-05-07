@@ -3,7 +3,9 @@ package com.financetrack.api.controller;
 import com.financetrack.api.dto.ParcelaDTO;
 
 import com.financetrack.api.exception.RegraNegocioException;
+import com.financetrack.model.entity.Despesa;
 import com.financetrack.model.entity.Parcela;
+import com.financetrack.service.DespesaService;
 import com.financetrack.service.ParcelaService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 
 public class ParcelaController {
     private final ParcelaService service;
+    private final DespesaService despesaService;
 
     @GetMapping()
     public ResponseEntity get() {
@@ -36,5 +39,30 @@ public class ParcelaController {
             return new ResponseEntity("Parcela não encontrada", HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ok(parcela.map(ParcelaDTO::create));
+    }
+
+    @PostMapping()
+    public ResponseEntity post(@RequestBody ParcelaDTO dto) {
+        try {
+            Parcela parcela = converter(dto);
+            parcela = service.salvar(parcela);
+            return new ResponseEntity(parcela, HttpStatus.CREATED);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    public Parcela converter(ParcelaDTO dto) {
+        ModelMapper modelMapper = new ModelMapper();
+        Parcela parcela = modelMapper.map(dto, Parcela.class);
+        if (dto.getIdDespesa() != null) {
+            Optional<Despesa> despesa = despesaService.getDespesaById(dto.getIdDespesa());
+            if (!despesa.isPresent()) {
+                parcela.setDespesa(null);
+            } else {
+                parcela.setDespesa(despesa.get());
+            }
+        }
+        return parcela;
     }
 }

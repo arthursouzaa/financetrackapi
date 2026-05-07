@@ -55,6 +55,7 @@ public class MetaFinanceiraController {
     public MetaFinanceira converter(MetaFinanceiraDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         MetaFinanceira metaFinanceira = modelMapper.map(dto, MetaFinanceira.class);
+        metaFinanceira.setId(null);
         if (dto.getIdCliente() != null) {
             Optional<Cliente> cliente = clienteService.getClienteById(dto.getIdCliente());
             if (!cliente.isPresent()) {

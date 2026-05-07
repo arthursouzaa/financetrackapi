@@ -2,9 +2,13 @@ package com.financetrack.api.controller;
 
 import com.financetrack.api.dto.DespesaDTO;
 
+import com.financetrack.api.exception.RegraNegocioException;
+import com.financetrack.model.entity.Cliente;
 import com.financetrack.model.entity.Despesa;
+import com.financetrack.service.ClienteService;
 import com.financetrack.service.DespesaService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +24,7 @@ import java.util.stream.Collectors;
 
 public class DespesaController {
     private final DespesaService service;
+    private final ClienteService clienteService;
 
     @GetMapping()
     public ResponseEntity get() {
@@ -34,5 +39,31 @@ public class DespesaController {
             return new ResponseEntity("Despesa não encontrada", HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ok(despesa.map(DespesaDTO::create));
+    }
+
+    @PostMapping()
+    public ResponseEntity post(@RequestBody DespesaDTO dto) {
+        try {
+            Despesa despesa = converter(dto);
+            despesa = service.salvar(despesa);
+            return new ResponseEntity(despesa, HttpStatus.CREATED);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    public Despesa converter(DespesaDTO dto) {
+        ModelMapper modelMapper = new ModelMapper();
+        Despesa despesa = modelMapper.map(dto, Despesa.class);
+        despesa.setId(null);
+        if (dto.getIdCliente() != null) {
+            Optional<Cliente> cliente = clienteService.getClienteById(dto.getIdCliente());
+            if (!cliente.isPresent()) {
+                despesa.setCliente(null);
+            } else {
+                despesa.setCliente(cliente.get());
+            }
+        }
+        return despesa;
     }
 }
