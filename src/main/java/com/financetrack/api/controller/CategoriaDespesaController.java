@@ -1,9 +1,11 @@
 package com.financetrack.api.controller;
 
+import com.financetrack.api.dto.AporteDTO;
 import com.financetrack.api.dto.CategoriaDespesaDTO;
 
 import com.financetrack.api.dto.CategoriaReceitaDTO;
 import com.financetrack.api.exception.RegraNegocioException;
+import com.financetrack.model.entity.Aporte;
 import com.financetrack.model.entity.CategoriaDespesa;
 import com.financetrack.model.entity.CategoriaReceita;
 import com.financetrack.model.entity.Cliente;
@@ -49,6 +51,21 @@ public class CategoriaDespesaController {
             CategoriaDespesa categoriaDespesa = converter(dto);
             categoriaDespesa = service.salvar(categoriaDespesa);
             return new ResponseEntity(categoriaDespesa, HttpStatus.CREATED);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity atualizar(@PathVariable("id") Long id, @RequestBody CategoriaDespesaDTO dto) {
+        if (!service.getCategoriaDespesaById(id).isPresent()) {
+            return new ResponseEntity("Categoria não encontrada", HttpStatus.NOT_FOUND);
+        }
+        try {
+            CategoriaDespesa categoriaDespesa = converter(dto);
+            categoriaDespesa.setId(id);
+            service.salvar(categoriaDespesa);
+            return ResponseEntity.ok(categoriaDespesa);
         } catch (RegraNegocioException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

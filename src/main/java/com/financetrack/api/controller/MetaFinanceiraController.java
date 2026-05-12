@@ -52,6 +52,21 @@ public class MetaFinanceiraController {
         }
     }
 
+    @PutMapping("{id}")
+    public ResponseEntity atualizar(@PathVariable("id") Long id, @RequestBody MetaFinanceiraDTO dto) {
+        if (!service.getMetaFinanceiraById(id).isPresent()) {
+            return new ResponseEntity("Meta financeira não encontrada", HttpStatus.NOT_FOUND);
+        }
+        try {
+            MetaFinanceira metaFinanceira = converter(dto);
+            metaFinanceira.setId(id);
+            service.salvar(metaFinanceira);
+            return ResponseEntity.ok(metaFinanceira);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     public MetaFinanceira converter(MetaFinanceiraDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         MetaFinanceira metaFinanceira = modelMapper.map(dto, MetaFinanceira.class);

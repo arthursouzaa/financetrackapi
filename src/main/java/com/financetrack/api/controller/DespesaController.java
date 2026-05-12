@@ -52,6 +52,21 @@ public class DespesaController {
         }
     }
 
+    @PutMapping("{id}")
+    public ResponseEntity atualizar(@PathVariable("id") Long id, @RequestBody DespesaDTO dto) {
+        if (!service.getDespesaById(id).isPresent()) {
+            return new ResponseEntity("Despesa não encontrada", HttpStatus.NOT_FOUND);
+        }
+        try {
+            Despesa despesa = converter(dto);
+            despesa.setId(id);
+            service.salvar(despesa);
+            return ResponseEntity.ok(despesa);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     public Despesa converter(DespesaDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         Despesa despesa = modelMapper.map(dto, Despesa.class);

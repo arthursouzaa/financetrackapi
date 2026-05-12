@@ -52,6 +52,21 @@ public class ReceitaController {
         }
     }
 
+    @PutMapping("{id}")
+    public ResponseEntity atualizar(@PathVariable("id") Long id, @RequestBody ReceitaDTO dto) {
+        if (!service.getReceitaById(id).isPresent()) {
+            return new ResponseEntity("Receita não encontrado", HttpStatus.NOT_FOUND);
+        }
+        try {
+            Receita receita = converter(dto);
+            receita.setId(id);
+            service.salvar(receita);
+            return ResponseEntity.ok(receita);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     public Receita converter(ReceitaDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         Receita receita = modelMapper.map(dto, Receita.class);

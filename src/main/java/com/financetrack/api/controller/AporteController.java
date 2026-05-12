@@ -52,6 +52,21 @@ public class AporteController {
         }
     }
 
+    @PutMapping("{id}")
+    public ResponseEntity atualizar(@PathVariable("id") Long id, @RequestBody AporteDTO dto) {
+        if (!service.getAporteById(id).isPresent()) {
+            return new ResponseEntity("Aporte não encontrado", HttpStatus.NOT_FOUND);
+        }
+        try {
+            Aporte aporte = converter(dto);
+            aporte.setId(id);
+            service.salvar(aporte);
+            return ResponseEntity.ok(aporte);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     public Aporte converter(AporteDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         Aporte aporte = modelMapper.map(dto, Aporte.class);

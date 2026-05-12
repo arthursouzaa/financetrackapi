@@ -52,6 +52,21 @@ public class ParcelaController {
         }
     }
 
+    @PutMapping("{id}")
+    public ResponseEntity atualizar(@PathVariable("id") Long id, @RequestBody ParcelaDTO dto) {
+        if (!service.getParcelaById(id).isPresent()) {
+            return new ResponseEntity("Parcela não encontrada", HttpStatus.NOT_FOUND);
+        }
+        try {
+            Parcela parcela = converter(dto);
+            parcela.setId(id);
+            service.salvar(parcela);
+            return ResponseEntity.ok(parcela);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     public Parcela converter(ParcelaDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         Parcela parcela = modelMapper.map(dto, Parcela.class);
