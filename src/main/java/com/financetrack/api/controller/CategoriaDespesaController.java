@@ -71,6 +71,20 @@ public class CategoriaDespesaController {
         }
     }
 
+    @DeleteMapping("{id}")
+    public ResponseEntity excluir(@PathVariable("id") Long id) {
+        Optional<CategoriaDespesa> categoriaDespesa = service.getCategoriaDespesaById(id);
+        if (!categoriaDespesa.isPresent()) {
+            return new ResponseEntity("Categoria não encontrada", HttpStatus.NOT_FOUND);
+        }
+        try {
+            service.excluir(categoriaDespesa.get());
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     public CategoriaDespesa converter(CategoriaDespesaDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         CategoriaDespesa categoriaDespesa = modelMapper.map(dto, CategoriaDespesa.class);

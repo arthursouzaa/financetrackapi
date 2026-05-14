@@ -67,6 +67,20 @@ public class AporteController {
         }
     }
 
+    @DeleteMapping("{id}")
+    public ResponseEntity excluir(@PathVariable("id") Long id) {
+        Optional<Aporte> aporte = service.getAporteById(id);
+        if (!aporte.isPresent()) {
+            return new ResponseEntity("Aporte não encontrado", HttpStatus.NOT_FOUND);
+        }
+        try {
+            service.excluir(aporte.get());
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     public Aporte converter(AporteDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         Aporte aporte = modelMapper.map(dto, Aporte.class);

@@ -69,6 +69,20 @@ public class CategoriaReceitaController {
         }
     }
 
+    @DeleteMapping("{id}")
+    public ResponseEntity excluir(@PathVariable("id") Long id) {
+        Optional<CategoriaReceita> categoriaReceita = service.getCategoriaReceitaById(id);
+        if (!categoriaReceita.isPresent()) {
+            return new ResponseEntity("Categoria não encontrada", HttpStatus.NOT_FOUND);
+        }
+        try {
+            service.excluir(categoriaReceita.get());
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     public CategoriaReceita converter(CategoriaReceitaDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         CategoriaReceita categoriaReceita = modelMapper.map(dto, CategoriaReceita.class);

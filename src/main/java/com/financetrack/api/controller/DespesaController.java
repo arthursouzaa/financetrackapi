@@ -3,10 +3,14 @@ package com.financetrack.api.controller;
 import com.financetrack.api.dto.DespesaDTO;
 
 import com.financetrack.api.exception.RegraNegocioException;
+import com.financetrack.model.entity.CategoriaDespesa;
 import com.financetrack.model.entity.Cliente;
 import com.financetrack.model.entity.Despesa;
+import com.financetrack.model.entity.FormaPagamento;
+import com.financetrack.service.CategoriaDespesaService;
 import com.financetrack.service.ClienteService;
 import com.financetrack.service.DespesaService;
+import com.financetrack.service.FormaPagamentoService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -25,6 +29,8 @@ import java.util.stream.Collectors;
 public class DespesaController {
     private final DespesaService service;
     private final ClienteService clienteService;
+    private final FormaPagamentoService formaPagamentoService;
+    private final CategoriaDespesaService categoriaDespesaService;
 
     @GetMapping()
     public ResponseEntity get() {
@@ -67,6 +73,20 @@ public class DespesaController {
         }
     }
 
+    @DeleteMapping("{id}")
+    public ResponseEntity excluir(@PathVariable("id") Long id) {
+        Optional<Despesa> despesa = service.getDespesaById(id);
+        if (!despesa.isPresent()) {
+            return new ResponseEntity("Despesa não encontrada", HttpStatus.NOT_FOUND);
+        }
+        try {
+            service.excluir(despesa.get());
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     public Despesa converter(DespesaDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         Despesa despesa = modelMapper.map(dto, Despesa.class);
@@ -77,6 +97,22 @@ public class DespesaController {
                 despesa.setCliente(null);
             } else {
                 despesa.setCliente(cliente.get());
+            }
+        }
+        if (dto.getIdFormaPagamento() != null) {
+            Optional<FormaPagamento> formaPagamento = formaPagamentoService.getFormaPagamentoById(dto.getIdFormaPagamento());
+            if (!formaPagamento.isPresent()) {
+                despesa.setFormaPagamento(null);
+            } else {
+                despesa.setFormaPagamento(formaPagamento.get());
+            }
+        }
+        if (dto.getIdCategoriaDespesa() != null) {
+            Optional<CategoriaDespesa> categoriaDespesa = categoriaDespesaService.getCategoriaDespesaById(dto.getIdCategoriaDespesa());
+            if (!categoriaDespesa.isPresent()) {
+                despesa.setCategoriaDespesa(null);
+            } else {
+                despesa.setCategoriaDespesa(categoriaDespesa.get());
             }
         }
         return despesa;

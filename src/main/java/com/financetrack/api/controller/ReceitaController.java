@@ -3,8 +3,11 @@ package com.financetrack.api.controller;
 import com.financetrack.api.dto.ReceitaDTO;
 
 import com.financetrack.api.exception.RegraNegocioException;
+import com.financetrack.model.entity.CategoriaDespesa;
+import com.financetrack.model.entity.CategoriaReceita;
 import com.financetrack.model.entity.Cliente;
 import com.financetrack.model.entity.Receita;
+import com.financetrack.service.CategoriaReceitaService;
 import com.financetrack.service.ClienteService;
 import com.financetrack.service.ReceitaService;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +28,7 @@ import java.util.stream.Collectors;
 public class ReceitaController {
     private final ReceitaService service;
     private final ClienteService clienteService;
+    private final CategoriaReceitaService categoriaReceitaService;
 
     @GetMapping()
     public ResponseEntity get() {
@@ -67,6 +71,20 @@ public class ReceitaController {
         }
     }
 
+    @DeleteMapping("{id}")
+    public ResponseEntity excluir(@PathVariable("id") Long id) {
+        Optional<Receita> receita = service.getReceitaById(id);
+        if (!receita.isPresent()) {
+            return new ResponseEntity("Receita não encontrada", HttpStatus.NOT_FOUND);
+        }
+        try {
+            service.excluir(receita.get());
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     public Receita converter(ReceitaDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         Receita receita = modelMapper.map(dto, Receita.class);
@@ -77,6 +95,14 @@ public class ReceitaController {
                 receita.setCliente(null);
             } else {
                 receita.setCliente(cliente.get());
+            }
+        }
+        if (dto.getIdCategoriaReceita() != null) {
+            Optional<CategoriaReceita> categoriaReceita = categoriaReceitaService.getCategoriaReceitaById(dto.getIdCategoriaReceita());
+            if (!categoriaReceita.isPresent()) {
+                receita.setCategoriaReceita(null);
+            } else {
+                receita.setCategoriaReceita(categoriaReceita.get());
             }
         }
         return receita;

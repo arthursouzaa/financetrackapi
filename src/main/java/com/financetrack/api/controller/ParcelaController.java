@@ -67,6 +67,20 @@ public class ParcelaController {
         }
     }
 
+    @DeleteMapping("{id}")
+    public ResponseEntity excluir(@PathVariable("id") Long id) {
+        Optional<Parcela> parcela = service.getParcelaById(id);
+        if (!parcela.isPresent()) {
+            return new ResponseEntity("Parcela não encontrada", HttpStatus.NOT_FOUND);
+        }
+        try {
+            service.excluir(parcela.get());
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     public Parcela converter(ParcelaDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         Parcela parcela = modelMapper.map(dto, Parcela.class);
