@@ -7,6 +7,10 @@ import com.financetrack.model.entity.Cliente;
 import com.financetrack.model.entity.MetaFinanceira;
 import com.financetrack.service.ClienteService;
 import com.financetrack.service.MetaFinanceiraService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -21,18 +25,28 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/metasFinanceiras")
 @RequiredArgsConstructor
 @CrossOrigin
+@Tag(name = "Metas Financeiras", description = "API de Gerenciamento de Metas Financeiras")
 
 public class MetaFinanceiraController {
     private final MetaFinanceiraService service;
     private final ClienteService clienteService;
 
     @GetMapping()
+    @Operation(summary = "Listar todas as Metas Financeiras")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista de Metas Financeiras retornada com sucesso!")
+    })
     public ResponseEntity get() {
-        List<MetaFinanceira> metaFinanceiras = service.getMetasFinanceiras();
-        return ResponseEntity.ok(metaFinanceiras.stream().map(MetaFinanceiraDTO::create).collect(Collectors.toList()));
+        List<MetaFinanceira> metasFinanceira = service.getMetasFinanceiras();
+        return ResponseEntity.ok(metasFinanceira.stream().map(MetaFinanceiraDTO::create).collect(Collectors.toList()));
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Obter detalhes da Meta Financeira")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Meta Financeira encontrada!"),
+            @ApiResponse(responseCode = "404", description = "Meta Financeira não encontrada.")
+    })
     public ResponseEntity get(@PathVariable("id") Long id) {
         Optional<MetaFinanceira> metaFinanceira = service.getMetaFinanceiraById(id);
         if (!metaFinanceira.isPresent()) {
@@ -42,6 +56,11 @@ public class MetaFinanceiraController {
     }
 
     @PostMapping()
+    @Operation(summary = "Cadastrar nova Meta Financeira")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Meta Financeira cadastrada com sucesso!"),
+            @ApiResponse(responseCode = "400", description = "Erro ao Cadastrar Meta Financeira.")
+    })
     public ResponseEntity post(@RequestBody MetaFinanceiraDTO dto) {
         try {
             MetaFinanceira metaFinanceira = converter(dto);
@@ -53,6 +72,12 @@ public class MetaFinanceiraController {
     }
 
     @PutMapping("{id}")
+    @Operation(summary = "Atualizar Meta Financeira")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Meta Financeira atualizada com sucesso!"),
+            @ApiResponse(responseCode = "400", description = "Erro ao atualizar Meta Financeira."),
+            @ApiResponse(responseCode = "404", description = "Meta Financeira não encontrada.")
+    })
     public ResponseEntity atualizar(@PathVariable("id") Long id, @RequestBody MetaFinanceiraDTO dto) {
         if (!service.getMetaFinanceiraById(id).isPresent()) {
             return new ResponseEntity("Meta financeira não encontrada", HttpStatus.NOT_FOUND);
@@ -68,6 +93,12 @@ public class MetaFinanceiraController {
     }
 
     @DeleteMapping("{id}")
+    @Operation(summary = "Excluir Meta Financeira")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Meta Financeira excluída com sucesso!"),
+            @ApiResponse(responseCode = "404", description = "Meta Financeira não encontrada."),
+            @ApiResponse(responseCode = "400", description = "Erro ao excluir Meta Financeira.")
+    })
     public ResponseEntity excluir(@PathVariable("id") Long id) {
         Optional<MetaFinanceira> metaFinanceira = service.getMetaFinanceiraById(id);
         if (!metaFinanceira.isPresent()) {

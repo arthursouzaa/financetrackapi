@@ -6,6 +6,10 @@ import com.financetrack.api.exception.RegraNegocioException;
 import com.financetrack.model.entity.Cliente;
 import com.financetrack.model.entity.MetaFinanceira;
 import com.financetrack.service.ClienteService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -20,17 +24,27 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/clientes")
 @RequiredArgsConstructor
 @CrossOrigin
+@Tag(name = "Clientes", description = "API de Gerenciamento de Clientes")
 
 public class ClienteController {
     private final ClienteService service;
 
     @GetMapping()
+    @Operation(summary = "Listar todas os Clientes")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista de Clientes retornada com sucesso!")
+    })
     public ResponseEntity get() {
         List<Cliente> clientes = service.getClientes();
         return ResponseEntity.ok(clientes.stream().map(ClienteDTO::create).collect(Collectors.toList()));
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Obter detalhes do Cliente")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Cliente encontrado!"),
+            @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
+    })
     public ResponseEntity get(@PathVariable("id") Long id) {
         Optional<Cliente> cliente = service.getClienteById(id);
         if (!cliente.isPresent()) {
@@ -40,6 +54,11 @@ public class ClienteController {
     }
 
     @PostMapping()
+    @Operation(summary = "Cadastrar novo Cliente")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Cliente cadastrado com sucesso!"),
+            @ApiResponse(responseCode = "400", description = "Erro ao cadastrar aporte.")
+    })
     public ResponseEntity post(@RequestBody ClienteDTO dto) {
         try {
             Cliente cliente = converter(dto);
@@ -51,6 +70,12 @@ public class ClienteController {
     }
 
     @PutMapping("{id}")
+    @Operation(summary = "Atualizar Cliente")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Cliente atualizado com sucesso!"),
+            @ApiResponse(responseCode = "400", description = "Erro ao atualizar Cliente."),
+            @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
+    })
     public ResponseEntity atualizar(@PathVariable("id") Long id, @RequestBody ClienteDTO dto) {
         if (!service.getClienteById(id).isPresent()) {
             return new ResponseEntity("Cliente não encontrado", HttpStatus.NOT_FOUND);
@@ -66,6 +91,12 @@ public class ClienteController {
     }
 
     @DeleteMapping("{id}")
+    @Operation(summary = "Excluir Cliente")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Cliente excluído com sucesso!"),
+            @ApiResponse(responseCode = "404", description = "Cliente não encontrado."),
+            @ApiResponse(responseCode = "400", description = "Erro ao excluir Cliente.")
+    })
     public ResponseEntity excluir(@PathVariable("id") Long id) {
         Optional<Cliente> cliente = service.getClienteById(id);
         if (!cliente.isPresent()) {

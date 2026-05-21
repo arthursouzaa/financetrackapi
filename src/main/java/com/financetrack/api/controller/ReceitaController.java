@@ -3,13 +3,16 @@ package com.financetrack.api.controller;
 import com.financetrack.api.dto.ReceitaDTO;
 
 import com.financetrack.api.exception.RegraNegocioException;
-import com.financetrack.model.entity.CategoriaDespesa;
 import com.financetrack.model.entity.CategoriaReceita;
 import com.financetrack.model.entity.Cliente;
 import com.financetrack.model.entity.Receita;
 import com.financetrack.service.CategoriaReceitaService;
 import com.financetrack.service.ClienteService;
 import com.financetrack.service.ReceitaService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -24,6 +27,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/receitas")
 @RequiredArgsConstructor
 @CrossOrigin
+@Tag(name = "Receitas", description = "API de Gerenciamento de Receitas")
 
 public class ReceitaController {
     private final ReceitaService service;
@@ -31,12 +35,21 @@ public class ReceitaController {
     private final CategoriaReceitaService categoriaReceitaService;
 
     @GetMapping()
+    @Operation(summary = "Listar todas as Receitas")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista de Receitas retornada com sucesso!")
+    })
     public ResponseEntity get() {
         List<Receita> receitas = service.getReceitas();
         return ResponseEntity.ok(receitas.stream().map(ReceitaDTO::create).collect(Collectors.toList()));
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Obter detalhes da Receita")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Receita encontrada!"),
+            @ApiResponse(responseCode = "404", description = "Receita não encontrada.")
+    })
     public ResponseEntity get(@PathVariable("id") Long id) {
         Optional<Receita> receita = service.getReceitaById(id);
         if (!receita.isPresent()) {
@@ -46,6 +59,11 @@ public class ReceitaController {
     }
 
     @PostMapping()
+    @Operation(summary = "Cadastrar nova Receita")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Receita cadastrada com sucesso!"),
+            @ApiResponse(responseCode = "400", description = "Erro ao Cadastrar Receita.")
+    })
     public ResponseEntity post(@RequestBody ReceitaDTO dto) {
         try {
             Receita receita = converter(dto);
@@ -57,6 +75,12 @@ public class ReceitaController {
     }
 
     @PutMapping("{id}")
+    @Operation(summary = "Atualizar Receita")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Receita atualizada com sucesso!"),
+            @ApiResponse(responseCode = "400", description = "Erro ao atualizar Receita."),
+            @ApiResponse(responseCode = "404", description = "Receita não encontrada.")
+    })
     public ResponseEntity atualizar(@PathVariable("id") Long id, @RequestBody ReceitaDTO dto) {
         if (!service.getReceitaById(id).isPresent()) {
             return new ResponseEntity("Receita não encontrado", HttpStatus.NOT_FOUND);
@@ -72,6 +96,12 @@ public class ReceitaController {
     }
 
     @DeleteMapping("{id}")
+    @Operation(summary = "Excluir Receita")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Receita excluída com sucesso!"),
+            @ApiResponse(responseCode = "404", description = "Receita não encontrada."),
+            @ApiResponse(responseCode = "400", description = "Erro ao excluir Receita.")
+    })
     public ResponseEntity excluir(@PathVariable("id") Long id) {
         Optional<Receita> receita = service.getReceitaById(id);
         if (!receita.isPresent()) {

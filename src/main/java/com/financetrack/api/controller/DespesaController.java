@@ -11,6 +11,10 @@ import com.financetrack.service.CategoriaDespesaService;
 import com.financetrack.service.ClienteService;
 import com.financetrack.service.DespesaService;
 import com.financetrack.service.FormaPagamentoService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -25,6 +29,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/despesas")
 @RequiredArgsConstructor
 @CrossOrigin
+@Tag(name = "Despesas", description = "API de Gerenciamento de Despesas")
 
 public class DespesaController {
     private final DespesaService service;
@@ -33,12 +38,21 @@ public class DespesaController {
     private final CategoriaDespesaService categoriaDespesaService;
 
     @GetMapping()
+    @Operation(summary = "Listar todas as Despesas")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista de Despesas retornada com sucesso!")
+    })
     public ResponseEntity get() {
         List<Despesa> despesas = service.getDespesas();
         return ResponseEntity.ok(despesas.stream().map(DespesaDTO::create).collect(Collectors.toList()));
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Obter detalhes da Despesa")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Despesa encontrada!"),
+            @ApiResponse(responseCode = "404", description = "Despesa não encontrada.")
+    })
     public ResponseEntity get(@PathVariable("id") Long id) {
         Optional<Despesa> despesa = service.getDespesaById(id);
         if (!despesa.isPresent()) {
@@ -48,6 +62,11 @@ public class DespesaController {
     }
 
     @PostMapping()
+    @Operation(summary = "Cadastrar nova Despesa")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Despesa cadastrada com sucesso!"),
+            @ApiResponse(responseCode = "400", description = "Erro ao Cadastrar Despesa.")
+    })
     public ResponseEntity post(@RequestBody DespesaDTO dto) {
         try {
             Despesa despesa = converter(dto);
@@ -59,6 +78,12 @@ public class DespesaController {
     }
 
     @PutMapping("{id}")
+    @Operation(summary = "Atualizar Despesa")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Despesa atualizada com sucesso!"),
+            @ApiResponse(responseCode = "400", description = "Erro ao atualizar Despesa."),
+            @ApiResponse(responseCode = "404", description = "Despesa não encontrada.")
+    })
     public ResponseEntity atualizar(@PathVariable("id") Long id, @RequestBody DespesaDTO dto) {
         if (!service.getDespesaById(id).isPresent()) {
             return new ResponseEntity("Despesa não encontrada", HttpStatus.NOT_FOUND);
@@ -74,6 +99,12 @@ public class DespesaController {
     }
 
     @DeleteMapping("{id}")
+    @Operation(summary = "Excluir Despesa")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Despesa excluída com sucesso!"),
+            @ApiResponse(responseCode = "404", description = "Despesa não encontrada."),
+            @ApiResponse(responseCode = "400", description = "Erro ao excluir Despesa.")
+    })
     public ResponseEntity excluir(@PathVariable("id") Long id) {
         Optional<Despesa> despesa = service.getDespesaById(id);
         if (!despesa.isPresent()) {

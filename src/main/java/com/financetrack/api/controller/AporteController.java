@@ -7,6 +7,11 @@ import com.financetrack.model.entity.Aporte;
 import com.financetrack.model.entity.MetaFinanceira;
 import com.financetrack.service.AporteService;
 import com.financetrack.service.MetaFinanceiraService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -21,19 +26,29 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/aportes")
 @RequiredArgsConstructor
 @CrossOrigin
+@Tag(name = "Aportes", description = "API de Gerenciamento de Aportes")
 
 public class AporteController {
     private final AporteService service;
     private final MetaFinanceiraService metaFinanceiraService;
 
     @GetMapping()
+    @Operation(summary = "Listar todos os Aportes")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista de Aportes retornada com sucesso!")
+    })
     public ResponseEntity get() {
         List<Aporte> aportes = service.getAportes();
         return ResponseEntity.ok(aportes.stream().map(AporteDTO::create).collect(Collectors.toList()));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity get(@PathVariable("id") Long id) {
+    @Operation(summary = "Obter detalhes do Aporte")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Aporte encontrado!"),
+            @ApiResponse(responseCode = "404", description = "Aporte não encontrado.")
+    })
+    public ResponseEntity get(@PathVariable("id") @Parameter(description = "ID do aporte") Long id) {
         Optional<Aporte> aporte = service.getAporteById(id);
         if (!aporte.isPresent()) {
             return new ResponseEntity("Aporte não encontrado", HttpStatus.NOT_FOUND);
@@ -42,6 +57,11 @@ public class AporteController {
     }
 
     @PostMapping()
+    @Operation(summary = "Cadastrar novo Aporte")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Aporte cadastrado com sucesso!"),
+            @ApiResponse(responseCode = "400", description = "Erro ao cadastrar aporte.")
+    })
     public ResponseEntity post(@RequestBody AporteDTO dto) {
         try {
             Aporte aporte = converter(dto);
@@ -53,6 +73,12 @@ public class AporteController {
     }
 
     @PutMapping("{id}")
+    @Operation(summary = "Atualizar Aporte")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Aporte atualizado com sucesso!"),
+            @ApiResponse(responseCode = "400", description = "Erro ao atualizar Aporte."),
+            @ApiResponse(responseCode = "404", description = "Aporte não encontrado.")
+    })
     public ResponseEntity atualizar(@PathVariable("id") Long id, @RequestBody AporteDTO dto) {
         if (!service.getAporteById(id).isPresent()) {
             return new ResponseEntity("Aporte não encontrado", HttpStatus.NOT_FOUND);
@@ -68,6 +94,12 @@ public class AporteController {
     }
 
     @DeleteMapping("{id}")
+    @Operation(summary = "Excluir Aporte")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Aporte excluído com sucesso!"),
+            @ApiResponse(responseCode = "404", description = "Aporte não encontrado."),
+            @ApiResponse(responseCode = "400", description = "Erro ao excluir Aporte.")
+    })
     public ResponseEntity excluir(@PathVariable("id") Long id) {
         Optional<Aporte> aporte = service.getAporteById(id);
         if (!aporte.isPresent()) {
