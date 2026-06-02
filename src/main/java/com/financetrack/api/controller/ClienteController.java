@@ -57,7 +57,7 @@ public class ClienteController {
     @Operation(summary = "Cadastrar novo Cliente")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Cliente cadastrado com sucesso!"),
-            @ApiResponse(responseCode = "400", description = "Erro ao cadastrar aporte.")
+            @ApiResponse(responseCode = "400", description = "Erro ao cadastrar cliente.")
     })
     public ResponseEntity post(@RequestBody ClienteDTO dto) {
         try {

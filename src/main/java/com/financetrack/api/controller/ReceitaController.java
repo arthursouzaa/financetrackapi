@@ -114,7 +114,7 @@ public class ReceitaController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
+        
     public Receita converter(ReceitaDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         Receita receita = modelMapper.map(dto, Receita.class);
