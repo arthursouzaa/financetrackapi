@@ -1,0 +1,5 @@
+$kind: http-request
+name: progressos
+url: http://localhost:8000/api/v1/progresso-missao
+method: GET
+order: 17755246633

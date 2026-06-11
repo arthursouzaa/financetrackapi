@@ -1,0 +1,5 @@
+$kind: http-request
+name: progresso
+url: ""
+method: DELETE
+order: 4502217343590343

@@ -1,0 +1,5 @@
+$kind: http-request
+name: alternativa
+url: http://localhost:8000/api/v1/questoes/18/alternativas/19
+method: DELETE
+order: 4497969823917903

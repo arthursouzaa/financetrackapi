@@ -1,0 +1,14 @@
+$kind: http-request
+name: alternativa
+url: http://localhost:8000/api/v1/questoes/2/alternativas/3
+method: PUT
+body:
+  type: json
+  content: "{\r
+
+    \    \"texto\": \"Um tipo de array\",\r
+
+    \    \"correta\": true\r
+
+    }"
+order: 4488646021912479

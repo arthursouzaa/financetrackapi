@@ -1,0 +1,5 @@
+$kind: http-request
+name: distintivoAdquirido
+url: http://localhost:8000/api/v1/usuarios/2/distintivos/2
+method: DELETE
+order: 4499642975055738

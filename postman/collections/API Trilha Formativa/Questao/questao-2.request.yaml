@@ -1,0 +1,18 @@
+$kind: http-request
+name: questao
+url: http://localhost:8000/api/v1/missoes/2/questoes
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"enunciado\": \"Perguntonaaaa\",\r
+
+    \    \"tipoQuestao\": \"multipla escolha\",\r
+
+    \    \"mensagemCorrecao\": \"Mensagem\"\r
+
+    \r
+
+    }"
+order: 707069449876

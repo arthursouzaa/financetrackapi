@@ -1,0 +1,5 @@
+$kind: http-request
+name: questao
+url: http://localhost:8000/api/v1/missoes/1/questoes/20
+method: DELETE
+order: 4410811072588623

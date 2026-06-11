@@ -1,0 +1,16 @@
+$kind: http-request
+name: progresso
+url: http://localhost:8000/api/v1/usuarios/2/missoes/3
+method: PUT
+body:
+  type: json
+  content: "{\r
+
+    \    \"progresso\": 100,\r
+
+    \    \"tentativasRealizadas\": 2,\r
+
+    \    \"pontuacaoObtida\": 100\r
+
+    }"
+order: 4433092663296451

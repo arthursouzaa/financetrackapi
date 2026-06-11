@@ -1,0 +1,5 @@
+$kind: http-request
+name: distintivosAdquiridos
+url: /api/v1/usuario/distintivo
+method: GET
+order: 4488445340121976

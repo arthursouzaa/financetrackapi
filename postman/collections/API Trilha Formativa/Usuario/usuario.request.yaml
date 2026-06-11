@@ -1,0 +1,22 @@
+$kind: http-request
+name: usuario
+url: http://localhost:8000/api/v1/usuarios
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"nomeUsuario\": \"Pedro Costa\",\r
+
+    \    \"nomeAventureiro\": \"omagox\",\r
+
+    \    \"correioEletronico\": \"email@email.com\",\r
+
+    \    \"primeiroAcesso\": true,\r
+
+    \    \"senha\": \"Senha123#\",\r
+
+    \    \"idOcupacao\": 1\r
+
+    }"
+order: 1179955030124

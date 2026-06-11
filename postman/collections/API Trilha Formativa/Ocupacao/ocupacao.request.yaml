@@ -1,0 +1,12 @@
+$kind: http-request
+name: ocupacao
+url: http://localhost:8000/api/v1/ocupacoes
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"titulo\": \"Analista de Re\"\r
+
+    }"
+order: 1143454396976498

@@ -1,0 +1,12 @@
+$kind: http-request
+name: ocupacao
+url: http://localhost:8000/api/v1/ocupacoes/1
+method: PUT
+body:
+  type: json
+  content: "{\r
+
+    \  \"titulo\": \"Dev backend\"\r
+
+    }"
+order: 4503507569396480

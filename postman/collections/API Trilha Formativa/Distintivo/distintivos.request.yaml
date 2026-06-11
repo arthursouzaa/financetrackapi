@@ -1,0 +1,5 @@
+$kind: http-request
+name: distintivos
+url: http://localhost:8000/api/v1/distintivos
+method: GET
+order: 1780260185975

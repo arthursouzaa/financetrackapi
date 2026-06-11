@@ -1,0 +1,5 @@
+$kind: http-request
+name: alternativas
+url: http://localhost:8000/api/v1/questoes/2/alternativas/3
+method: GET
+order: 4355110515188927

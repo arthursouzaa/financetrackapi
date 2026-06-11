@@ -1,0 +1,8 @@
+$kind: http-request
+name: tematica
+url: http://localhost:8000/api/v1/tematicas
+method: POST
+body:
+  type: json
+  content: "{\r\n    \"titulo\": \"Backend\"\r\n}"
+order: 1056076687229

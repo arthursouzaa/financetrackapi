@@ -1,0 +1,5 @@
+$kind: http-request
+name: tematicas
+url: http://localhost:8000/api/v1/tematicas
+method: GET
+order: 1780171603821

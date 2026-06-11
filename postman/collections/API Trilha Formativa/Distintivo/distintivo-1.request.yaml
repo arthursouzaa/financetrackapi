@@ -1,0 +1,16 @@
+$kind: http-request
+name: distintivo
+url: http://localhost:8000/api/v1/distintivos
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"titulo\": \"avançado\",\r
+
+    \    \"pontuacao\": 150,\r
+
+    \    \"nomeArquivo\": \"avançado.png\"\r
+
+    }"
+order: 1488801505601

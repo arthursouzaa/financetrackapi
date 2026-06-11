@@ -1,0 +1,13 @@
+$kind: http-request
+url: http://localhost:8000/api/v1/usuarios/distintivos
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"idUsuario\": 2,\r
+
+    \    \"idDistintivo\": 2\r
+
+    }"
+order: 1569695386321855

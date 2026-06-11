@@ -1,0 +1,20 @@
+$kind: http-request
+name: progresso
+url: http://localhost:8000/api/v1/usuarios/missoes
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"idUsuario\": 1,\r
+
+    \    \"idMissao\": 4,\r
+
+    \    \"progresso\": 100,\r
+
+    \    \"tentativasRealizadas\": 3,\r
+
+    \    \"pontuacaoObtida\": 50\r
+
+    }"
+order: 7786782152

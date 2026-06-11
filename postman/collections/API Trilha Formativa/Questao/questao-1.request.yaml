@@ -1,0 +1,30 @@
+$kind: http-request
+name: questao
+url: http://localhost:8000/api/v1/missoes/1/questoes/19
+method: PUT
+body:
+  type: json
+  content: "{\r
+
+    \    \"enunciado\": \"O que é uma aaaaaaaaaa?\",\r
+
+    \    \"tipoQuestao\": \"multipla escolha\",\r
+
+    \    \"mensagemCorrecao\": \"Variável armazena valores.\",\r
+
+    \    \"alternativas\": [\r
+
+    \        {\r
+
+    \            \"id\": 21,\r
+
+    \            \"texto\": \"Textãoaaa\",\r
+
+    \            \"correta\": false\r
+
+    \        }\r
+
+    \    ]\r
+
+    }"
+order: 2879539721966706

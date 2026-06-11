@@ -1,0 +1,4 @@
+$kind: http-request
+url: http://localhost:8000//api/v1/usuarios/1/distintivos/1
+method: GET
+order: 4494800920530274

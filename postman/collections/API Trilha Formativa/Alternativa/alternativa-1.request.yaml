@@ -1,0 +1,14 @@
+$kind: http-request
+name: alternativa
+url: http://localhost:8000/api/v1/questoes/1/alternativas
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"texto\": \"Leandrinho\",\r
+
+    \    \"correta\": true\r
+
+    }"
+order: 960690581516

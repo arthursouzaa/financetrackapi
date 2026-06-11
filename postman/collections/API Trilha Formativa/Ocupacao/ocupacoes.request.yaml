@@ -1,0 +1,5 @@
+$kind: http-request
+name: ocupacoes
+url: http://localhost:8000/api/v1/ocupacoes
+method: GET
+order: 3145689013456167

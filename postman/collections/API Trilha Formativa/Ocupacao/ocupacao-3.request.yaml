@@ -1,0 +1,5 @@
+$kind: http-request
+name: ocupacao
+url: http://localhost:8000/api/v1/ocupacoes/10
+method: DELETE
+order: 4503346198387180

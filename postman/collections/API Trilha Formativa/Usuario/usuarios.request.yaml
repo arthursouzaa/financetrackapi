@@ -1,0 +1,5 @@
+$kind: http-request
+name: usuarios
+url: http://localhost:8000/api/v1/usuarios
+method: GET
+order: 1780248708022
