@@ -13,6 +13,7 @@ import java.util.Date;
 @NoArgsConstructor
 
 public class ReceitaDTO {
+    private Long id;
     private String nome;
     private Date data;
     private boolean volume;
@@ -24,7 +25,7 @@ public class ReceitaDTO {
     public static ReceitaDTO create(Receita receita) {
         ModelMapper modelMapper = new ModelMapper();
         ReceitaDTO dto = modelMapper.map(receita, ReceitaDTO.class);
-        dto.nomeCategoriaReceita = receita.getCategoriaReceita().getNome();
+        dto.nomeCategoriaReceita = receita.getCategoriaReceita() != null ? receita.getCategoriaReceita().getNome() : "Sem Categoria";
         return dto;
     }
 }

@@ -13,6 +13,7 @@ import java.util.Date;
 @NoArgsConstructor
 
 public class DespesaDTO {
+    private Long id;
     private String nome;
     private Date data;
     private boolean volume;

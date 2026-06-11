@@ -13,6 +13,7 @@ import java.util.Date;
 @NoArgsConstructor
     
 public class MetaFinanceiraDTO {
+    private Long id;
     private String nome;
     private float valor;
     private Date dataEnvio;
