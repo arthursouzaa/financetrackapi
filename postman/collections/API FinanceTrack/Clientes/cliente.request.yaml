@@ -1,0 +1,22 @@
+$kind: http-request
+name: cliente
+url: http://localhost:8081/api/v1/clientes
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"nome\": \"Seu Nome\",\r
+
+    \  \"email\": \"usuario@email.com\",\r
+
+    \  \"telefone\": \"32999999999\",\r
+
+    \  \"senha\": \"SenhaForte123\",\r
+
+    \  \"senhaConfirmada\": \"SenhaForte123\",\r
+
+    \  \"admin\": true\r
+
+    }"
+order: 1593121959978

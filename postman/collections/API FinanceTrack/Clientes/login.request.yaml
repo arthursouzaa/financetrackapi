@@ -1,0 +1,14 @@
+$kind: http-request
+name: login
+url: http://localhost:8081/api/v1/clientes/login
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"email\": \"usuario@email.com\",\r
+
+    \    \"senha\": \"SenhaForte123\"\r
+
+    }"
+order: 688200103818
