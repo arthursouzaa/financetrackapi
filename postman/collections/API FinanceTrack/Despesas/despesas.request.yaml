@@ -1,0 +1,7 @@
+$kind: http-request
+name: despesas
+url: http://localhost:8081/api/v1/despesas
+method: GET
+auth:
+  type: bearer
+order: 1781386804665

@@ -24,4 +24,5 @@ public class Cliente {
     private String telefone;
     private String senha;
     private String senhaConfirmada;
+    private boolean admin;
 }
