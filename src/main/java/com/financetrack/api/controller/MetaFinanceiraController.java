@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/v1/metasFinanceiras")
 @RequiredArgsConstructor
-@CrossOrigin
 @Tag(name = "Metas Financeiras", description = "API de Gerenciamento de Metas Financeiras")
 
 public class MetaFinanceiraController {

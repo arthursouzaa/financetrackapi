@@ -1,0 +1,28 @@
+$kind: http-request
+name: metasFinanceiras
+url: http://localhost:8081/api/v1/metasFinanceiras
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"nome\": \"string\",\r
+
+    \  \"valor\": 0.1,\r
+
+    \  \"dataEnvio\": \"2026-06-14T14:31:10.440Z\",\r
+
+    \  \"dataAlvo\": \"2026-06-14T14:31:10.440Z\",\r
+
+    \  \"investimentoInicial\": 0.1,\r
+
+    \  \"status\": true,\r
+
+    \  \"idCliente\": 2\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{auth_secret_175p}}"
+order: 2466354890223864

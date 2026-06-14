@@ -1,0 +1,5 @@
+$kind: http-request
+name: cliente
+url: http://localhost:8081/api/v1/clientes/1
+method: DELETE
+order: 3407433772666499
