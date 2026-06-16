@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -31,10 +32,10 @@ public class SecurityConfig {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Bean
-    public OncePerRequestFilter jwtFilter() {
-        return new JwtAuthFilter(jwtService, usuarioService);
-    }
+//    @Bean
+//    public OncePerRequestFilter jwtFilter() {
+//        return new JwtAuthFilter(jwtService, usuarioService);
+//    }
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
@@ -51,10 +52,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configure(http))
-                .csrf(csrf -> csrf.disable())
+                .cors(org.springframework.security.config.Customizer.withDefaults())
+                .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/webjars/**").permitAll()
                         .requestMatchers("/api/v1/clientes/**").permitAll()
                         .requestMatchers("/api/v1/aportes/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/v1/categoriasDespesa/**").hasAnyRole("USER", "ADMIN")
@@ -67,7 +69,8 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
+                // INSTANCIE O FILTRO DIRETAMENTE AQUI:
+                .addFilterBefore(new JwtAuthFilter(jwtService, usuarioService), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

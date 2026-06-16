@@ -69,6 +69,13 @@ public class ClienteController {
     })
     public ResponseEntity<?> post(@RequestBody ClienteDTO dto) {
         try {
+            if (dto.getSenha() == null || dto.getSenha().trim().equals("") ||
+                    dto.getSenhaConfirmada() == null || dto.getSenhaConfirmada().trim().equals("")) {
+                return ResponseEntity.badRequest().body("Senha inválida");
+            }
+            if (!dto.getSenha().equals(dto.getSenhaConfirmada())) {
+                return ResponseEntity.badRequest().body("Senhas não conferem");
+            }
             Cliente cliente = converter(dto);
             cliente = service.salvar(cliente);
             return new ResponseEntity<>(ClienteDTO.create(cliente), HttpStatus.CREATED);
@@ -77,7 +84,7 @@ public class ClienteController {
         }
     }
 
-    @PostMapping("/login")
+    @PostMapping("/auth")
     @Operation(summary = "Autenticar Cliente (Sign In)")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Autenticação realizada com sucesso!"),
