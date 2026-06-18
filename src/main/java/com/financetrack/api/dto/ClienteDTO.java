@@ -17,6 +17,7 @@ public class ClienteDTO {
     private String telefone;
     private String senha;
     private String senhaConfirmada;
+    private boolean admin;
 
     public static ClienteDTO create(Cliente cliente) {
         ModelMapper modelMapper = new ModelMapper();

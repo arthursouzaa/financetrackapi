@@ -77,7 +77,7 @@ public class ClienteController {
         }
     }
 
-    @PostMapping("/login")
+    @PostMapping("/auth")
     @Operation(summary = "Autenticar Cliente (Sign In)")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Autenticação realizada com sucesso!"),
