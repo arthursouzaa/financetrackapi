@@ -13,8 +13,8 @@ import org.modelmapper.ModelMapper;
 public class CategoriaDespesaDTO {
     private Long id;
     private String nome;
-    private boolean limiteGasto;
-    private float valorLimite;
+    private Boolean limiteGasto;
+    private Float valorLimite;
     private Long idCliente;
 
     public static CategoriaDespesaDTO create(CategoriaDespesa categoriaDespesa) {

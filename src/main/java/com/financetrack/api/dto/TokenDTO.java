@@ -10,5 +10,6 @@ import lombok.NoArgsConstructor;
 public class TokenDTO {
     private Long id;
     private String email;
+    private boolean admin;
     private String token;
 }

@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
@@ -58,7 +57,6 @@ public class ClienteService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
         Cliente usuario = repository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
 
@@ -76,36 +74,34 @@ public class ClienteService implements UserDetailsService {
     @Transactional
     public Cliente salvar(Cliente cliente) {
         validar(cliente, true);
-
         validarEmail(cliente.getEmail(), null);
-
         criptografarSenha(cliente);
-
         return repository.save(cliente);
     }
 
     @Transactional
-    public Cliente atualizar(Long id, Cliente dadosAtualizados) {
-
+    public Cliente atualizar(Long id, Cliente dadosNovos) {
         Cliente clienteExistente = repository.findById(id)
-                .orElseThrow(() ->
-                        new RegraNegocioException("Usuário não encontrado."));
+                .orElseThrow(() -> new RegraNegocioException("Cliente não encontrado."));
 
-        validar(dadosAtualizados, false);
+        validarCampo(dadosNovos.getNome(), "Nome inválido.");
+        validarCampo(dadosNovos.getTelefone(), "Telefone inválido.");
+        validarTelefone(dadosNovos.getTelefone());
+        validarEmail(dadosNovos.getEmail(), id);
 
-        validarEmail(dadosAtualizados.getEmail(), id);
+        clienteExistente.setNome(dadosNovos.getNome());
+        clienteExistente.setEmail(dadosNovos.getEmail());
+        clienteExistente.setTelefone(dadosNovos.getTelefone());
+        clienteExistente.setAdmin(dadosNovos.isAdmin());
 
-        clienteExistente.setNome(dadosAtualizados.getNome());
-        clienteExistente.setEmail(dadosAtualizados.getEmail());
-        clienteExistente.setTelefone(dadosAtualizados.getTelefone());
+        if (dadosNovos.getSenha() != null && !dadosNovos.getSenha().isBlank()) {
+            if (!dadosNovos.getSenha().startsWith("$2a$")) {
+                // Roda apenas a validação de força da senha (Regex)
+                validarSenha(dadosNovos.getSenha());
 
-        if (possuiSenha(dadosAtualizados.getSenha())) {
-            criptografarSenha(dadosAtualizados);
-
-            clienteExistente.setSenha(dadosAtualizados.getSenha());
-            clienteExistente.setSenhaConfirmada(
-                    dadosAtualizados.getSenhaConfirmada()
-            );
+                String senhaCriptografada = encoder.encode(dadosNovos.getSenha());
+                clienteExistente.setSenha(senhaCriptografada);
+            }
         }
 
         return repository.save(clienteExistente);
@@ -118,22 +114,16 @@ public class ClienteService implements UserDetailsService {
     }
 
     private void validar(Cliente cliente, boolean validarSenha) {
-
         validarCampo(cliente.getNome(), "Nome inválido.");
         validarCampo(cliente.getTelefone(), "Telefone inválido.");
-
         validarTelefone(cliente.getTelefone());
 
         if (validarSenha || possuiSenha(cliente.getSenha())) {
-            validarSenha(
-                    cliente.getSenha(),
-                    cliente.getSenhaConfirmada()
-            );
+            validarSenha(cliente.getSenha());
         }
     }
 
     private void validarEmail(String email, Long idCliente) {
-
         validarCampo(email, "Email inválido.");
 
         if (!EMAIL_PATTERN.matcher(email).matches()) {
@@ -157,32 +147,22 @@ public class ClienteService implements UserDetailsService {
     }
 
     private void validarTelefone(String telefone) {
-
         String telefoneNumeros = telefone.replaceAll("\\D", "");
 
-        if (telefoneNumeros.length() < 10
-                || telefoneNumeros.length() > 11) {
-
+        if (telefoneNumeros.length() < 10 || telefoneNumeros.length() > 11) {
             throw new RegraNegocioException(
                     "O telefone deve conter o DDD e ter 10 ou 11 dígitos (Ex: 11999998888)."
             );
         }
     }
 
-    private void validarSenha(String senha, String senhaConfirmada) {
-
+    private void validarSenha(String senha) {
         validarCampo(senha, "Senha inválida.");
 
         if (!SENHA_PATTERN.matcher(senha).matches()) {
             throw new RegraNegocioException(
                     "A senha deve conter letras maiúsculas, minúsculas, números e ter entre 8 e 32 caracteres."
             );
-        }
-
-        if (senhaConfirmada == null
-                || !senhaConfirmada.equals(senha)) {
-
-            throw new RegraNegocioException("As senhas não conferem.");
         }
     }
 
@@ -191,11 +171,7 @@ public class ClienteService implements UserDetailsService {
     }
 
     private void criptografarSenha(Cliente cliente) {
-
-        String senhaCriptografada =
-                encoder.encode(cliente.getSenha());
-
+        String senhaCriptografada = encoder.encode(cliente.getSenha());
         cliente.setSenha(senhaCriptografada);
-        cliente.setSenhaConfirmada(senhaCriptografada);
     }
 }

@@ -69,6 +69,8 @@ public class ClienteController {
     })
     public ResponseEntity<?> post(@RequestBody ClienteDTO dto) {
         try {
+            validarConfirmacaoSenha(dto.getSenha(), dto.getSenhaConfirmada());
+
             Cliente cliente = converter(dto);
             cliente = service.salvar(cliente);
             return new ResponseEntity<>(ClienteDTO.create(cliente), HttpStatus.CREATED);
@@ -99,6 +101,7 @@ public class ClienteController {
             return ResponseEntity.ok(new TokenDTO(
                     usuarioAutenticado.getId(),
                     usuarioAutenticado.getEmail(),
+                    usuarioAutenticado.isAdmin(),
                     token
             ));
 
@@ -107,6 +110,45 @@ public class ClienteController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno no servidor: " + e.getMessage());
+        }
+    }
+
+    @PatchMapping("/{id}")
+    @Operation(summary = "Atualização Parcial de Cliente (Ex: Alterar Tipo de Perfil)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Cliente updated parcialmente com sucesso!"),
+            @ApiResponse(responseCode = "400", description = "Erro na validação da atualização."),
+            @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
+    })
+    public ResponseEntity<?> patch(@PathVariable("id") Long id, @RequestBody ClienteDTO dto) {
+        Optional<Cliente> clienteOptional = service.getClienteById(id);
+        if (clienteOptional.isEmpty()) {
+            return new ResponseEntity<>("Cliente não encontrado", HttpStatus.NOT_FOUND);
+        }
+
+        try {
+            Cliente clienteExistente = clienteOptional.get();
+
+            clienteExistente.setAdmin(dto.isAdmin());
+
+            if (dto.getNome() != null && !dto.getNome().isBlank()) {
+                clienteExistente.setNome(dto.getNome());
+            }
+            if (dto.getEmail() != null && !dto.getEmail().isBlank()) {
+                clienteExistente.setEmail(dto.getEmail());
+            }
+
+            Cliente clienteAtualizado = service.atualizar(id, clienteExistente);
+            String novoToken = jwtService.gerarToken(clienteAtualizado);
+
+            return ResponseEntity.ok(new TokenDTO(
+                    clienteAtualizado.getId(),
+                    clienteAtualizado.getEmail(),
+                    clienteAtualizado.isAdmin(),
+                    novoToken
+            ));
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -119,6 +161,11 @@ public class ClienteController {
     })
     public ResponseEntity<?> atualizar(@PathVariable("id") Long id, @RequestBody ClienteDTO dto) {
         try {
+            // 🔒 Se o usuário enviou uma senha nova para atualizar no PUT, valida a confirmação
+            if (dto.getSenha() != null && !dto.getSenha().isBlank() && !dto.getSenha().startsWith("$2a$")) {
+                validarConfirmacaoSenha(dto.getSenha(), dto.getSenhaConfirmada());
+            }
+
             Cliente dadosNovos = converter(dto);
             Cliente clienteAtualizado = service.atualizar(id, dadosNovos);
             String novoToken = jwtService.gerarToken(clienteAtualizado);
@@ -126,6 +173,7 @@ public class ClienteController {
             return ResponseEntity.ok(new TokenDTO(
                     clienteAtualizado.getId(),
                     clienteAtualizado.getEmail(),
+                    clienteAtualizado.isAdmin(),
                     novoToken
             ));
         } catch (RegraNegocioException e) {
@@ -156,5 +204,14 @@ public class ClienteController {
     public Cliente converter(ClienteDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(dto, Cliente.class);
+    }
+
+    private void validarConfirmacaoSenha(String senha, String senhaConfirmada) {
+        if (senha == null || senha.trim().isEmpty()) {
+            throw new RegraNegocioException("Senha inválida.");
+        }
+        if (senhaConfirmada == null || !senhaConfirmada.equals(senha)) {
+            throw new RegraNegocioException("As senhas não conferem.");
+        }
     }
 }
