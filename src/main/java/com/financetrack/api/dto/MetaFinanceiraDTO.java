@@ -19,7 +19,7 @@ public class MetaFinanceiraDTO {
     private Date dataEnvio;
     private Date dataAlvo;
     private float investimentoInicial;
-    private boolean status; // adicional: status da meta - em aberto ou concluída
+    private boolean status;
     private Long idCliente;
 
     public static MetaFinanceiraDTO create(MetaFinanceira metaFinanceira) {

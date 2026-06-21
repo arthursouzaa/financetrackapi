@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Data
@@ -20,5 +22,7 @@ public abstract class CategoriaLancamento {
     private String nome;
 
     @ManyToOne
+    @JoinColumn(name = "cliente_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Cliente cliente;
 }
