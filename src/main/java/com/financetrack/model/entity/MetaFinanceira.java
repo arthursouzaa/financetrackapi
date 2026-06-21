@@ -7,7 +7,9 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Data
@@ -29,4 +31,7 @@ public class MetaFinanceira {
 
     @ManyToOne
     private Cliente cliente;
+
+    @OneToMany(mappedBy = "metaFinanceira", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Aporte> aportes = new ArrayList<>();
 }

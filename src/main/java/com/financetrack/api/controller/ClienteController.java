@@ -161,7 +161,6 @@ public class ClienteController {
     })
     public ResponseEntity<?> atualizar(@PathVariable("id") Long id, @RequestBody ClienteDTO dto) {
         try {
-            // 🔒 Se o usuário enviou uma senha nova para atualizar no PUT, valida a confirmação
             if (dto.getSenha() != null && !dto.getSenha().isBlank() && !dto.getSenha().startsWith("$2a$")) {
                 validarConfirmacaoSenha(dto.getSenha(), dto.getSenhaConfirmada());
             }

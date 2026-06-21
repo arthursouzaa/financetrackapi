@@ -1,5 +1,6 @@
 package com.financetrack.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.financetrack.model.entity.Cliente;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,6 +17,7 @@ public class ClienteDTO {
     private String email;
     private String telefone;
     private String senha;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String senhaConfirmada;
     private boolean admin;
 
