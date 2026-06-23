@@ -100,6 +100,7 @@ public class ClienteController {
 
             return ResponseEntity.ok(new TokenDTO(
                     usuarioAutenticado.getId(),
+                    usuarioAutenticado.getNome(),
                     usuarioAutenticado.getEmail(),
                     usuarioAutenticado.isAdmin(),
                     token
@@ -143,6 +144,7 @@ public class ClienteController {
 
             return ResponseEntity.ok(new TokenDTO(
                     clienteAtualizado.getId(),
+                    clienteAtualizado.getNome(),
                     clienteAtualizado.getEmail(),
                     clienteAtualizado.isAdmin(),
                     novoToken
@@ -171,6 +173,7 @@ public class ClienteController {
 
             return ResponseEntity.ok(new TokenDTO(
                     clienteAtualizado.getId(),
+                    clienteAtualizado.getNome(),
                     clienteAtualizado.getEmail(),
                     clienteAtualizado.isAdmin(),
                     novoToken
