@@ -19,6 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +29,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/v1/clientes")
 @RequiredArgsConstructor
-@CrossOrigin
 @Tag(name = "Clientes", description = "API de Gerenciamento de Clientes e Autenticação")
 public class ClienteController {
 
@@ -72,6 +73,13 @@ public class ClienteController {
             validarConfirmacaoSenha(dto.getSenha(), dto.getSenhaConfirmada());
 
             Cliente cliente = converter(dto);
+            
+            if (!isRequisicaoDeAdmin()) {
+                cliente.setAdmin(false);
+            } else {
+                cliente.setAdmin(dto.isAdmin());
+            }
+
             cliente = service.salvar(cliente);
             return new ResponseEntity<>(ClienteDTO.create(cliente), HttpStatus.CREATED);
         } catch (RegraNegocioException e) {
@@ -119,7 +127,8 @@ public class ClienteController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Cliente updated parcialmente com sucesso!"),
             @ApiResponse(responseCode = "400", description = "Erro na validação da atualização."),
-            @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
+            @ApiResponse(responseCode = "404", description = "Cliente não encontrado."),
+            @ApiResponse(responseCode = "403", description = "Acesso negado: Apenas administradores podem conceder ou remover privilégios de administrador.")
     })
     public ResponseEntity<?> patch(@PathVariable("id") Long id, @RequestBody ClienteDTO dto) {
         Optional<Cliente> clienteOptional = service.getClienteById(id);
@@ -130,7 +139,12 @@ public class ClienteController {
         try {
             Cliente clienteExistente = clienteOptional.get();
 
-            clienteExistente.setAdmin(dto.isAdmin());
+            if (dto.isAdmin() != clienteExistente.isAdmin()) {
+                if (!isRequisicaoDeAdmin()) {
+                    return new ResponseEntity<>("Acesso negado: Apenas administradores podem conceder ou remover privilégios de administrador.", HttpStatus.FORBIDDEN);
+                }
+                clienteExistente.setAdmin(dto.isAdmin());
+            }
 
             if (dto.getNome() != null && !dto.getNome().isBlank()) {
                 clienteExistente.setNome(dto.getNome());
@@ -159,15 +173,34 @@ public class ClienteController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Cliente atualizado com sucesso!"),
             @ApiResponse(responseCode = "400", description = "Erro ao atualizar Cliente."),
-            @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
+            @ApiResponse(responseCode = "404", description = "Cliente não encontrado."),
+            @ApiResponse(responseCode = "403", description = "Acesso negado: Apenas administradores podem conceder ou remover privilégios de administrador.")
     })
     public ResponseEntity<?> atualizar(@PathVariable("id") Long id, @RequestBody ClienteDTO dto) {
+        Optional<Cliente> clienteOptional = service.getClienteById(id);
+        if (clienteOptional.isEmpty()) {
+            return new ResponseEntity<>("Cliente não encontrado", HttpStatus.NOT_FOUND);
+        }
+
         try {
+            Cliente clienteExistente = clienteOptional.get();
+
+            if (dto.isAdmin() != clienteExistente.isAdmin()) {
+                if (!isRequisicaoDeAdmin()) {
+                    return new ResponseEntity<>("Acesso negado: Apenas administradores podem conceder ou remover privilégios de administrador.", HttpStatus.FORBIDDEN);
+                }
+            } else {
+                dto.setAdmin(clienteExistente.isAdmin());
+            }
+
             if (dto.getSenha() != null && !dto.getSenha().isBlank() && !dto.getSenha().startsWith("$2a$")) {
                 validarConfirmacaoSenha(dto.getSenha(), dto.getSenhaConfirmada());
             }
 
             Cliente dadosNovos = converter(dto);
+            
+            dadosNovos.setAdmin(dto.isAdmin());
+
             Cliente clienteAtualizado = service.atualizar(id, dadosNovos);
             String novoToken = jwtService.gerarToken(clienteAtualizado);
 
@@ -215,5 +248,16 @@ public class ClienteController {
         if (senhaConfirmada == null || !senhaConfirmada.equals(senha)) {
             throw new RegraNegocioException("As senhas não conferem.");
         }
+    }
+
+    private boolean isRequisicaoDeAdmin() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        
+        if (auth == null || !auth.isAuthenticated() || auth.getPrincipal().equals("anonymousUser")) {
+            return false;
+        }
+        
+        return auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
     }
 }
