@@ -5,6 +5,7 @@ import com.financetrack.security.JwtService;
 import com.financetrack.service.ClienteService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -47,15 +48,18 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.disable())
+                .cors(cors -> cors.configure(http))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/clientes/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/clientes").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/clientes").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/clientes/auth").permitAll()
+                        .requestMatchers("/api/v1/clientes/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/v1/clientes/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/v1/aportes/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/v1/categoriasDespesa/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/v1/categoriasReceita/**").hasAnyRole("USER", "ADMIN")

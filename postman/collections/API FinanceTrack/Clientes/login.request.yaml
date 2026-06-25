@@ -6,9 +6,13 @@ body:
   type: json
   content: "{\r
 
-    \    \"email\": \"usuario@email.com\",\r
+    \    \"email\" : \"cliente@email.com\",\r
 
-    \    \"senha\": \"SenhaForte123\"\r
+    \    \"senha\" : \"SenhaTriste123\"\r
 
     }"
-order: 688200103818
+auth:
+  type: bearer
+  credentials:
+    token: "{{supabase_service_role_api_key_1684}}"
+order: 830367850318

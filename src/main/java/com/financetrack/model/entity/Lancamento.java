@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.Date;
 
@@ -24,5 +26,7 @@ public abstract class Lancamento {
     private float valor;
 
     @ManyToOne
+    @JoinColumn(name = "cliente_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Cliente cliente;
 }

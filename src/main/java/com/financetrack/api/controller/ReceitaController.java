@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/v1/receitas")
 @RequiredArgsConstructor
-@CrossOrigin
 @Tag(name = "Receitas", description = "API de Gerenciamento de Receitas")
 
 public class ReceitaController {

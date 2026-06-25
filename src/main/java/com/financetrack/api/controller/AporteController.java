@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/v1/aportes")
 @RequiredArgsConstructor
-@CrossOrigin
 @Tag(name = "Aportes", description = "API de Gerenciamento de Aportes")
 
 public class AporteController {

@@ -43,7 +43,7 @@ public class MetaFinanceiraService {
             throw new RegraNegocioException("Nome inválido.");
         }
         if (metaFinanceira.getValor() <= 0) {
-            throw new RegraNegocioException("Valor inválido!");
+            throw new RegraNegocioException("Valor alvo inválido!");
         }
         if (metaFinanceira.getInvestimentoInicial() < 0) {
             throw new RegraNegocioException("Investimento inicial inválido!");

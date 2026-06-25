@@ -16,10 +16,10 @@ public class DespesaDTO {
     private Long id;
     private String nome;
     private Date data;
-    private boolean volume;
-    private float valor;
-    private float quantidadeParcelas;
-    private boolean parcelada;
+    private Boolean volume;
+    private Float valor;
+    private Float quantidadeParcelas;
+    private Boolean parcelada;
     private Long idCliente;
     private Long idFormaPagamento;
     private String nomeFormaPagamento;

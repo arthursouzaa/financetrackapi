@@ -46,7 +46,5 @@ public class AporteService {
         if (aporte.getMetaFinanceira() == null || aporte.getMetaFinanceira().getId() == null || aporte.getMetaFinanceira().getId() == 0) {
             throw new RegraNegocioException("Meta inválida!");
         }
-
-        // crítica de data: somente datas de hj pra trás
     }
 }

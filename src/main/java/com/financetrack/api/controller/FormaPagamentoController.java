@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/v1/formasPagamento")
 @RequiredArgsConstructor
-@CrossOrigin
 @Tag(name = "Formas de Pagamento", description = "API de Gerenciamento de Formas de Pagamento")
 
 public class FormaPagamentoController {
